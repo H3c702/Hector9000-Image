@@ -33,7 +33,7 @@ jobs:
           echo "Version from PyPI: $HECTOR_VERSION"
         fi
         # Make sure we have a published version
-      #  curl -fsSL --output /dev/null --head https://pypi.org/pypi/Hector/$HECTOR_VERSION/ || exit 1
+        # curl -fsSL --output /dev/null --head https://pypi.org/pypi/Hector/$HECTOR_VERSION/ || exit 1
         echo "Hector9000 version: $HECTOR_VERSION"
         echo "HECTOR_VERSION=$HECTOR_VERSION" >> $GITHUB_ENV
 
