@@ -1,0 +1,7 @@
+*.img
+*.zip
+aptcache/archives/
+
+.DS_Store
+
+aptcache/

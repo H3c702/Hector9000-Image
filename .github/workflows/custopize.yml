@@ -1,0 +1,94 @@
+name: "CustoPiZe"
+
+on:
+  repository_dispatch:
+    types: [hector_release]
+  workflow_dispatch:
+    inputs:
+      hector_version:
+        description: "Hector9000 version (leave empty to use latest stable release)"
+        required: false
+        default: ''
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: "⬇ Checkout"
+      uses: actions/checkout@v2
+
+     - name: "🔎 Determine Hector9000 version"
+      run: |
+        if [[ "${{ github.event_name }}" = "repository_dispatch" && "${{ github.event.action }}" = "hector_release" ]]; then
+          HECTOR_VERSION="${{ github.event.client_payload.version }}"
+          echo "Version from repository dispatch: $HECTOR_VERSION"
+        else
+          HECTOR_VERSION="${{ github.event.inputs.hector_version }}"
+          echo "Version from workflow dispatch: $HECTOR_VERSION"
+        fi
+        if [ -z "$HECTOR_VERSION" ]; then
+          HECTOR_VERSION=$(curl https://pypi.org/pypi/Hector9000/json -s | jq -r '.info.version')
+          echo "Version from PyPI: $HECTOR_VERSION"
+        fi
+        # Make sure we have a published version
+        curl -fsSL --output /dev/null --head https://pypi.org/pypi/Hector/$HECTOR_VERSION/ || exit 1
+        echo "Hector9000 version: $HECTOR_VERSION"
+        echo "HECTOR_VERSION=$HECTOR_VERSION" >> $GITHUB_ENV
+
+
+
+    - name: "🏗 Run CustoPiZer"
+      uses: OctoPrint/CustoPiZer@main
+      with:
+        workspace: "${{ github.workspace }}/build"
+        scripts:  "${{ github.workspace }}/scripts"
+    
+    - name: "📝 Prepare release"
+      run: |
+        RELEASE_NAME="Hector9000 ${{ env.HECTOR_VERSION }}"
+        echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+        now=$(date +"%Y%m%d%H%M%S")
+        RELEASE_TAG="${{ env.HECTOR_VERSION }}-$now"
+        echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+        
+        # release body
+        cat <<EOF > ./build/release.md
+  
+          * Hector9000 ${{ env.HECTOR_VERSION }}
+          * Latest Hector9000WebUI 
+          * Latest kernel & bootloader
+          
+        Created with [CustoPiZer](https://github.com/OctoPrint/CustoPiZer)
+        EOF
+
+     - name: "✏ Rename image"
+      run: |
+        RELEASE_TAG="${{ env.RELEASE_TAG }}"
+        
+        IMAGE="hector9000-$RELEASE_TAG.img"
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+        cd build
+        mv output.img $IMAGE
+
+    - name: "📦 Package the image"
+      id: package-image
+      uses: DevTown/actions/package-rpi-image@main
+      with:
+        image_path: "build/${{ env.IMAGE }}"
+
+    - name: "🔖 Create release & attach assets"
+      uses: softprops/action-gh-release@v1
+      with:
+        name: "${{ env.RELEASE_NAME }}"
+        tag_name: "${{ env.RELEASE_TAG }}"
+        body_path: "build/release.md"
+        prerelease: ${{ contains(env.HECTOR_VERSION, 'rc') }}
+        fail_on_unmatched_files: true
+        files: |
+          build/${{ steps.package-image.outputs.zip_name }}
+          build/${{ steps.package-image.outputs.zip_name }}.md5
+          build/${{ steps.package-image.outputs.zip_name }}.sha256
+          build/rpi-imager.json
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
