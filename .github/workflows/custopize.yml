@@ -18,7 +18,7 @@ jobs:
     - name: "⬇ Checkout"
       uses: actions/checkout@v2
 
-     - name: "🔎 Determine Hector9000 version"
+    - name: "🔎 Determine Hector9000 version"
       run: |
         if [[ "${{ github.event_name }}" = "repository_dispatch" && "${{ github.event.action }}" = "hector_release" ]]; then
           HECTOR_VERSION="${{ github.event.client_payload.version }}"
@@ -62,7 +62,7 @@ jobs:
         Created with [CustoPiZer](https://github.com/OctoPrint/CustoPiZer)
         EOF
 
-     - name: "✏ Rename image"
+    - name: "✏ Rename image"
       run: |
         RELEASE_TAG="${{ env.RELEASE_TAG }}"
         
