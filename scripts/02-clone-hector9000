@@ -9,6 +9,5 @@ install_cleanup_trap
 cd /home/pi/
 sudo -u pi git clone https://github.com/H3c702/Hector9000.git
 cd Hector9000
-git checkout development
-chmod +x setup.sh 
+#git checkout development 
 chmod +x start.sh

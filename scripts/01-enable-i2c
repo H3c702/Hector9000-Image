@@ -6,10 +6,11 @@ export LC_ALL=C
 source /common.sh
 install_cleanup_trap
 
-if [ "$(id -u)" != 0 ]; then
-  echo 'Sorry, you need to run this script with sudo'
-  exit 1
-fi
+#if [ "$(id -u)" != 0 ]; then
+#  echo 'Sorry, you need to run this script with sudo'
+#  exit 1
+#fi
+
 # enable I2C on Raspberry Pi
 echo '>>> Enable I2C'
 if grep -q 'i2c-bcm2708' /etc/modules; then
