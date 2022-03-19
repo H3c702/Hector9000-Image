@@ -37,7 +37,16 @@ jobs:
         echo "Hector9000 version: $HECTOR_VERSION"
         echo "HECTOR_VERSION=$HECTOR_VERSION" >> $GITHUB_ENV
 
-
+    - name: Download Raspbian Image
+      run: |
+          mkdir "${{ github.workspace }}/build"
+          tree
+          cd "${{ github.workspace }}/build"
+          wget -c --trust-server-names --progress=dot:mega 'https://downloads.raspberrypi.org/raspios_armhf_latest'
+          unzip *.zip
+          rm *.zip
+          mv *.img input.img
+          tree
 
     - name: "🏗 Run CustoPiZer"
       uses: OctoPrint/CustoPiZer@main
@@ -92,4 +101,4 @@ jobs:
           build/${{ steps.package-image.outputs.zip_name }}.sha256
           build/rpi-imager.json
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
