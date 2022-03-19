@@ -99,6 +99,5 @@ jobs:
           build/${{ steps.package-image.outputs.zip_name }}
           build/${{ steps.package-image.outputs.zip_name }}.md5
           build/${{ steps.package-image.outputs.zip_name }}.sha256
-          build/rpi-imager.json
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
