@@ -54,24 +54,6 @@ jobs:
         workspace: "${{ github.workspace }}/build"
         scripts:  "${{ github.workspace }}/scripts"
 
-    - name: Download Raspbian Image 64
-      run: |
-          mkdir "${{ github.workspace }}/build64"
-          tree
-          cd "${{ github.workspace }}/build64"
-          wget -c --trust-server-names --progress=dot:mega 'https://downloads.raspberrypi.org/raspios_arm64_latest'
-          unzip *.zip
-          rm *.zip
-          mv *.img input.img
-          tree
-
-    - name: "🏗 Run CustoPiZer"
-      uses: OctoPrint/CustoPiZer@main
-      with:
-        workspace: "${{ github.workspace }}/build64"
-        scripts:  "${{ github.workspace }}/scripts"
-
-
 
     - name: "📝 Prepare release"
       run: |
@@ -100,26 +82,11 @@ jobs:
         cd build
         mv output.img $IMAGE
 
-    - name: "✏ Rename image 64"
-      run: |
-        RELEASE_TAG="${{ env.RELEASE_TAG }}"
-        
-        IMAGE="hector9000-$RELEASE_TAG-amd64.img"
-        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-        cd build64
-        mv output.img $IMAGE
-
     - name: "📦 Package the image"
       id: package-image
       uses: DevTown/actions/package-rpi-image@main
       with:
         image_path: "build/${{ env.IMAGE }}"
-
-    - name: "📦 Package the image 64"
-      id: package-image64
-      uses: DevTown/actions/package-rpi-image@main
-      with:
-        image_path: "build64/${{ env.IMAGE }}"
 
     - name: "🔖 Create release & attach assets"
       uses: softprops/action-gh-release@v1
@@ -133,8 +100,5 @@ jobs:
           build/${{ steps.package-image.outputs.zip_name }}
           build/${{ steps.package-image.outputs.zip_name }}.md5
           build/${{ steps.package-image.outputs.zip_name }}.sha256
-          build64/${{ steps.package-image64.outputs.zip_name }}
-          build64/${{ steps.package-image64.outputs.zip_name }}.md5
-          build64/${{ steps.package-image64.outputs.zip_name }}.sha256
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
