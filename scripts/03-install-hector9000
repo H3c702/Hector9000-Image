@@ -11,14 +11,13 @@ cd /home/pi/Hector9000/
 
 echo "Install needed packages"
 apt install python3 -y
-apt install pip3 -y
 apt install python3-pip -y
 apt install python3-setuptools -y
 apt install mosquitto -y
-apt install nohup -y
+#apt install nohup -y
 
 echo "Update mosquitto config"
-systemctl stop mosquitto
+
 cp /etc/mosquitto/mosquitto.conf /etc/mosquitto/mosquitto.conf.old
 rm /etc/mosquitto/mosquitto.conf
 touch /etc/mosquitto/mosquitto.conf
@@ -29,7 +28,6 @@ echo 'protocol websockets' >> /etc/mosquitto/mosquitto.conf
 echo 'socket_domain ipv4' >> /etc/mosquitto/mosquitto.conf
 echo 'allow_anonymous true' >> /etc/mosquitto/mosquitto.conf
 
-systemctl start mosquitto
 
 echo "install Hector9000"
 python setup.py develop

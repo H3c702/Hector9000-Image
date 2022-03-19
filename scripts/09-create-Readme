@@ -6,7 +6,9 @@ export LC_ALL=C
 source /common.sh
 install_cleanup_trap
 
-cd /home/pi/Desktop
+cd /home/pi
+mkdir Desktop
+cd Desktop
 
 echo "# After Installation" >> README.md
 echo "1) Check if i2c is enabled in RPI Config" >> README.md
