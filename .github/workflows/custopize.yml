@@ -43,8 +43,8 @@ jobs:
           tree
           cd "${{ github.workspace }}/build"
           wget -c --trust-server-names --progress=dot:mega 'https://downloads.raspberrypi.org/raspios_armhf_latest'
-          unzip *.zip
-          rm *.zip
+          unxz *.xz
+          rm *.xz
           mv *.img input.img
           tree
 
