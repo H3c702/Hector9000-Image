@@ -45,7 +45,7 @@ jobs:
           wget -c --trust-server-names --progress=dot:mega 'https://downloads.raspberrypi.org/raspios_armhf_latest'
           unxz *.xz
           tree
-          rm *.xz
+          #rm *.xz
           mv *.img input.img
           tree
 
